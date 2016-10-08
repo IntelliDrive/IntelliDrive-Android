@@ -4,25 +4,25 @@ package com.dglasser.intellidrive.POJO;
  * Basic POJO used for sending POST requests to server for login.
  */
 public class LoginObject {
-    private String username;
+    private String email;
     private String password;
 
     /**
-     * Basic constructor. Takes a username and password.
-     * @param username Username.
+     * Basic constructor. Takes a email and password.
+     * @param email Username.
      * @param password Password.
      */
-    public LoginObject(String username, String password) {
-        this.username = username;
+    public LoginObject(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
     /**
-     * Get username.
-     * @return username.
+     * Get email.
+     * @return email.
      */
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
     /**

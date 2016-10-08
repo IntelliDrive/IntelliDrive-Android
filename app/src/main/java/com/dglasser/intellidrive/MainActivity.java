@@ -2,6 +2,7 @@ package com.dglasser.intellidrive;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
@@ -66,14 +67,17 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        voiceButton.setOnClickListener( v -> sendSpeechInput());
+        voiceButton.setOnClickListener(v -> sendSpeechInput());
     }
 
+    @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ThinkEvent event) {
         Toast.makeText(this, event.getThought(), Toast.LENGTH_SHORT).show();
         String utteranceId=this.hashCode() + "";
         ttsInterpreter.speak(event.getThought(), TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+        SystemClock.sleep(2500);
+        sendSpeechInput();
     }
 
     /**
@@ -95,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 ChatterBotSession bot1session = bot.createSession();
                 if (bot1session != null) {
                     try {
-                        bot1session.think(
-                            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0));
+                        String userInput =
+                            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                        if (!userInput.contains("stop")) {
+                            bot1session.think(userInput);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -20,7 +20,7 @@ public class ThinkEvent extends EventBus {
      * Basic constructor. Takes a thought, and whether or not there was an error when processing
      * request.
      * @param thought Chatbot thought.
-     * @param error Wther tor not there was an error.
+     * @param error Whether tor not there was an error.
      */
     public ThinkEvent(String thought, boolean error) {
         this.thought = thought;

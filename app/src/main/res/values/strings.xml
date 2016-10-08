@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">IntelliDrive</string>
 
-    <string name="username">Username</string>
+    <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+
+    <string name="name">Name</string>
+    <string name="register_description">Don\'t have an account? Register!</string>
+    <string name="register_button">Register</string>
 
     <string name="token">token</string>
     <string name="token_storage">token_storage</string>

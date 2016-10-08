@@ -43,6 +43,8 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
      */
     @BindView(R.id.password_field) TextInputEditText passwordField;
 
+    @BindView(R.id.register_button) Button registerButton;
+
     /**
      * Shared preferences.
      */
@@ -54,8 +56,13 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        // If we're logged in, jump straight to the main page.
         sharedPreferences = getApplicationContext().getSharedPreferences(
             getString(R.string.token_storage), Context.MODE_PRIVATE);
+
+        if (sharedPreferences.getString(getString(R.string.token), null) != null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
 
         Gson gson = new GsonBuilder().create();
 
@@ -65,27 +72,35 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
             .build();
 
         LoginModel login = retrofit.create(LoginModel.class);
-        Call<Token> call = login.requestLoginToken(
-            new LoginObject(userNameField.getText().toString(),
-                passwordField.getText().toString()));
-
 
         forwardButton.setOnClickListener(v -> {
+            Toast.makeText(this, "username: " + userNameField.getText().toString() + " password:" + passwordField.getText().toString(), Toast.LENGTH_SHORT).show();
+            Call<Token> call = login.requestLoginToken(
+                new LoginObject(userNameField.getText().toString(),
+                    passwordField.getText().toString()));
+
+//            Call<Token> call = login.requestLoginToken(
+//                userNameField.getText().toString(),
+//                passwordField.getText().toString());
+
 //            startActivity(new Intent(this, MainActivity.class));
             call.clone().enqueue(this);
         });
+
+        registerButton.setOnClickListener(v ->
+            startActivity(new Intent(this, RegisterActivity.class)));
     }
 
     @Override
     public void onResponse(Call<Token> call, Response<Token> response) {
         if (response.code() == 200) {
+            Toast.makeText(this, response.body().getToken(), Toast.LENGTH_SHORT).show();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(getString(R.string.token), response.body().getToken());
             editor.apply();
             startActivity(new Intent(this, MainActivity.class));
-            Toast.makeText(this, response.body().getToken(), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, response.code() + "", Toast.LENGTH_SHORT).show();
         }
     }
 

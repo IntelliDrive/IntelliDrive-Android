@@ -110,18 +110,16 @@ class Cleverbot implements ChatterBot {
             return responseThought;
         }
 
+        @Override
         public void think(String text) throws Exception {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    ChatterBotThought thought = new ChatterBotThought();
-                    thought.setText(text);
-                    try {
-                        EventBus.getDefault().post(new ThinkEvent(think(thought).getText(), false));
-                    } catch (Exception e) {
-                        EventBus.getDefault().post(new ThinkEvent("failure", true));
-                        e.printStackTrace();
-                    }
+            Thread t = new Thread(() -> {
+                ChatterBotThought thought = new ChatterBotThought();
+                thought.setText(text);
+                try {
+                    EventBus.getDefault().post(new ThinkEvent(think(thought).getText(), false));
+                } catch (Exception e) {
+                    EventBus.getDefault().post(new ThinkEvent("failure", true));
+                    e.printStackTrace();
                 }
             });
             t.start();
