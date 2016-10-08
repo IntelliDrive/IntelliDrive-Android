@@ -20,14 +20,29 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Page where user registers.
+ */
 public class RegisterActivity extends AppCompatActivity implements Callback<BoringResposeObject> {
 
+    /**
+     * Field where user inputs name.
+     */
     @BindView(R.id.name_field) TextInputEditText nameField;
 
+    /**
+     * Field where user inputs username.
+     */
     @BindView(R.id.username_field) TextInputEditText emailField;
 
+    /**
+     * Field where user inputs password.
+     */
     @BindView(R.id.password_field) TextInputEditText passwordField;
 
+    /**
+     * Button user presses to register.
+     */
     @BindView(R.id.forward_button) Button registerButton;
 
     @Override

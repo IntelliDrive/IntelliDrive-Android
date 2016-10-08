@@ -51,9 +51,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * MainActivity. You already know.
+ */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener, Callback<BaseTripResponse> {
 
+    /**
+     * Google API client.
+     */
     GoogleApiClient googleApiClient;
 
     /**
@@ -61,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     Location location;
 
+    /**
+     * Location request scheduler.
+     */
     LocationRequest locationRequest;
 
     /**
@@ -82,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @BindView(R.id.get_all_miles) Button getAllMiles;
 
+    /**
+     * Shared preferences instance.
+     */
     SharedPreferences preferences;
 
     /**
@@ -104,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private Timer timer;
 
+    /**
+     * Android handler.
+     */
     private Handler handler = new Handler();
 
 
@@ -136,8 +151,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -172,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         voiceButton.setOnClickListener(v -> sendSpeechInput());
     }
 
+    /**
+     * Event listener for {@link ThinkEvent}.
+     * @param event ThinkEvent.
+     */
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(ThinkEvent event) {
@@ -298,12 +315,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // no-op
     }
 
+    /**
+     * Starts the mile reporter.
+     */
     private void startMileReporter() {
         timer = new Timer();
         initializeMileReporter();
         timer.schedule(timerTask, 1000, 600000);
     }
 
+    /**
+     * Initializes critical parts of the mile reporter, and schedules it to run. This should
+     * <b>NEVER</b> be called outside of startMileReporter unless you're looking for NPes.
+     */
     private void initializeMileReporter() {
         Gson gson = new Gson();
         timerTask = new TimerTask() {
@@ -328,6 +352,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         timerTask.run();
     }
 
+    /**
+     * Stops the timer task. Who likes memory leaks? Crazy people that's who.
+     */
     private void stopTimerTask() {
         if (timerTask != null) {
             timerTask.cancel();

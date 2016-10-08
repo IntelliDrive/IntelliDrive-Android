@@ -9,6 +9,9 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
+/**
+ * Interface for making networking requests. Used for sending miles and receiving trip data.
+ */
 public interface TripModel {
 
     String NEW_TRIP_ENDPOINT = "http://intellidriveapp.com/api/mile/";
