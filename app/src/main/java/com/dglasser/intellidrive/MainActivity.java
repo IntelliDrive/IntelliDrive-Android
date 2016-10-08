@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         locationRequest = new LocationRequest();
 
-        locationRequest.setInterval(5000);
+        locationRequest.setInterval(15000);
     }
 
     @Override
@@ -255,6 +255,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (this.location == null) {
             this.location = location;
         }
-        miles += this.location.distanceTo(location);
+        miles += this.location.distanceTo(location) * 0.000621371;
     }
 }
