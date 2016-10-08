@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -34,18 +32,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener {
-
-    private Timer timer;
-    private TimerTask timerTask;
-    private Handler timerHandler = new Handler();
 
     GoogleApiClient googleApiClient;
 
@@ -113,18 +105,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        ActivityCompat.requestPermissions(
-            this,
-            new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-            LOCATION_REQUEST_CODE);
-
-        if (ContextCompat.checkSelfPermission(
-            getApplicationContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            startTimer();
-        }
-
         initTextToSpeech();
 
         ChatterBotFactory factory = new ChatterBotFactory();
@@ -183,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
-        stopTimer();
         super.onStop();
     }
 
@@ -196,27 +175,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 ttsInterpreter.setLanguage(Locale.US);
             }
         });
-    }
-
-    private void stopTimer(){
-        if(timer != null){
-            timer.cancel();
-            timer.purge();
-        }
-    }
-
-    private void startTimer(){
-        timer = new Timer();
-
-        timerTask = new TimerTask() {
-
-            public void run() {
-                timerHandler.post(() -> {
-                });
-            }
-        };
-
-        timer.schedule(timerTask, 1, 5000);
     }
 
     @Override
@@ -256,5 +214,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             this.location = location;
         }
         miles += this.location.distanceTo(location) * 0.000621371;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 }

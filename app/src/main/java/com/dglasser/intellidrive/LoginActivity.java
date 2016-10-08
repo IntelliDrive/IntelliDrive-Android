@@ -74,16 +74,10 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         LoginModel login = retrofit.create(LoginModel.class);
 
         forwardButton.setOnClickListener(v -> {
-            Toast.makeText(this, "username: " + userNameField.getText().toString() + " password:" + passwordField.getText().toString(), Toast.LENGTH_SHORT).show();
             Call<Token> call = login.requestLoginToken(
                 new LoginObject(userNameField.getText().toString(),
                     passwordField.getText().toString()));
 
-//            Call<Token> call = login.requestLoginToken(
-//                userNameField.getText().toString(),
-//                passwordField.getText().toString());
-
-//            startActivity(new Intent(this, MainActivity.class));
             call.clone().enqueue(this);
         });
 
@@ -98,7 +92,9 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(getString(R.string.token), response.body().getToken());
             editor.apply();
-            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, MainActivity.class);
+            finishAffinity();
+            startActivity(intent);
         } else {
             Toast.makeText(this, response.code() + "", Toast.LENGTH_SHORT).show();
         }
