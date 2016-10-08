@@ -9,7 +9,7 @@ import android.widget.Toast;
 import com.dglasser.intellidrive.Model.LoginModel;
 import com.dglasser.intellidrive.Model.RegisterModel;
 import com.dglasser.intellidrive.POJO.RegisterObject;
-import com.dglasser.intellidrive.POJO.RegisterResponseObject;
+import com.dglasser.intellidrive.POJO.BoringResposeObject;
 import com.google.gson.Gson;
 
 import butterknife.BindView;
@@ -20,7 +20,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RegisterActivity extends AppCompatActivity implements Callback<RegisterResponseObject> {
+public class RegisterActivity extends AppCompatActivity implements Callback<BoringResposeObject> {
 
     @BindView(R.id.name_field) TextInputEditText nameField;
 
@@ -50,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Regi
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
             if (!name.isEmpty() || !email.isEmpty() || !password.isEmpty()) {
-                Call<RegisterResponseObject> call = register.registerNewUser(
+                Call<BoringResposeObject> call = register.registerNewUser(
                     new RegisterObject(name, email, password));
 
                 call.clone().enqueue(this);
@@ -61,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Regi
     }
 
     @Override
-    public void onResponse(Call<RegisterResponseObject> call, Response<RegisterResponseObject> response) {
+    public void onResponse(Call<BoringResposeObject> call, Response<BoringResposeObject> response) {
         if (response.code() == 200) {
             Toast.makeText(
                 this,
@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Regi
     }
 
     @Override
-    public void onFailure(Call<RegisterResponseObject> call, Throwable t) {
+    public void onFailure(Call<BoringResposeObject> call, Throwable t) {
         Toast.makeText(
             this,
             "Error while registering. Please check your network connection and try again",

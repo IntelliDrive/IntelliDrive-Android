@@ -2,9 +2,11 @@ package com.dglasser.intellidrive;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -13,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -21,23 +24,35 @@ import com.dglasser.intellidrive.CleverBotInterface.ChatterBotFactory;
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBotSession;
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBotType;
 import com.dglasser.intellidrive.Events.ThinkEvent;
+import com.dglasser.intellidrive.Model.TripModel;
+import com.dglasser.intellidrive.POJO.BaseTripResponse;
+import com.dglasser.intellidrive.POJO.RobustTripResponse;
+import com.dglasser.intellidrive.POJO.Token;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-    GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    GoogleApiClient.OnConnectionFailedListener, LocationListener, Callback<BaseTripResponse> {
 
     GoogleApiClient googleApiClient;
 
@@ -63,6 +78,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @BindView(R.id.voice_button) ImageButton voiceButton;
 
+    @BindView(R.id.start_trip_button) Button startTripButton;
+
+    @BindView(R.id.get_all_miles) Button getAllMiles;
+
+    SharedPreferences preferences;
+
     /**
      * Text to speech interpreter.
      */
@@ -72,6 +93,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Chatbot instance.
      */
     ChatterBot bot;
+
+    /**
+     * TimerTask.
+     */
+    private TimerTask timerTask;
+
+    /**
+     * Timer.
+     */
+    private Timer timer;
+
+    private Handler handler = new Handler();
+
 
     @Override
     protected void onStart() {
@@ -90,19 +124,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.wtf("DGL", "Finished building API client");
         }
 
+        startMileReporter();
+
         locationRequest = new LocationRequest();
 
         locationRequest.setInterval(15000);
+
+        preferences = getSharedPreferences(getString(R.string.token_storage), MODE_PRIVATE);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         initTextToSpeech();
+
+        Gson gson = new Gson();
 
         ChatterBotFactory factory = new ChatterBotFactory();
         try {
@@ -110,6 +152,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        startTripButton.setOnClickListener(v -> {
+            Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(TripModel.NEW_TRIP_ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+            TripModel model = retrofit.create(TripModel.class);
+
+            Call<BaseTripResponse> call = model.initNewTrip(
+                "PERSONAL",
+                "josh",
+                new Token(preferences.getString(getString(R.string.token), null)));
+
+            call.clone().enqueue(this);
+        });
 
         voiceButton.setOnClickListener(v -> sendSpeechInput());
     }
@@ -160,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         EventBus.getDefault().unregister(this);
+        googleApiClient.disconnect();
+        stopTimerTask();
         super.onStop();
     }
 
@@ -211,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             this.location = location;
         }
         miles += this.location.distanceTo(location) * 0.000621371;
-        Toast.makeText(this, location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -219,5 +278,60 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
+    }
+
+    @Override
+    public void onResponse(Call<BaseTripResponse> call, Response<BaseTripResponse> response) {
+        if (response.body() instanceof RobustTripResponse) {
+            // no op for now
+        } else {
+            if (response.code() == 200) {
+                Log.v("DGL", response.body().getMsg());
+            } else {
+                Toast.makeText(this, "No 200 :(" + response.code(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<BaseTripResponse> call, Throwable t) {
+        // no-op
+    }
+
+    private void startMileReporter() {
+        timer = new Timer();
+        initializeMileReporter();
+        timer.schedule(timerTask, 1000, 600000);
+    }
+
+    private void initializeMileReporter() {
+        Gson gson = new Gson();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(() -> {
+                    Retrofit retrofit = new Retrofit
+                        .Builder()
+                        .baseUrl(TripModel.NEW_TRIP_ENDPOINT)
+                        .addConverterFactory(GsonConverterFactory.create(gson))
+                        .build();
+
+                    TripModel tripModel = retrofit.create(TripModel.class);
+                    Call<BaseTripResponse> call = tripModel.addTripMiles(
+                        miles + "",
+                        new Token(preferences.getString(getString(R.string.token), null)));
+
+                    call.clone().enqueue(MainActivity.this);
+                });
+            }
+        };
+        timerTask.run();
+    }
+
+    private void stopTimerTask() {
+        if (timerTask != null) {
+            timerTask.cancel();
+            timer.purge();
+        }
     }
 }

@@ -12,4 +12,8 @@
     <string name="token">token</string>
     <string name="token_storage">token_storage</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="start_trip">Start Trip</string>
+
+    <string name="get_all_miles">Get all miles</string>
 </resources>

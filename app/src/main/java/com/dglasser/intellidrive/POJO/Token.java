@@ -9,6 +9,10 @@ public class Token {
      */
     String token;
 
+    public Token(String token) {
+        this.token = token;
+    }
+
     /**
      * Gets token.
      * @return Token.

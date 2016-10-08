@@ -1,7 +1,7 @@
 package com.dglasser.intellidrive.Model;
 
 import com.dglasser.intellidrive.POJO.RegisterObject;
-import com.dglasser.intellidrive.POJO.RegisterResponseObject;
+import com.dglasser.intellidrive.POJO.BoringResposeObject;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -15,10 +15,10 @@ public interface RegisterModel {
     String ENDPOINT = "http://intellidrive.com/";
 
     @POST("/api/register/")
-    Call<RegisterResponseObject> registerNewUser(@Body RegisterObject login);
+    Call<BoringResposeObject> registerNewUser(@Body RegisterObject login);
 
     @POST("/api/register/")
-    Call<RegisterResponseObject> registerNewUser(
+    Call<BoringResposeObject> registerNewUser(
         @Query("name") String name,
         @Query("email") String email,
         @Query("password") String password);
