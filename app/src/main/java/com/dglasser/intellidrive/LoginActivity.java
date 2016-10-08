@@ -1,10 +1,12 @@
 package com.dglasser.intellidrive;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.Toast;
@@ -27,6 +29,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Activity where user is able to log in.
  */
 public class LoginActivity extends AppCompatActivity implements Callback<Token> {
+
+    /**
+     * Location request code.
+     */
+    private static final int LOCATION_REQUEST_CODE = 1;
 
     /**
      * Button to log in.
@@ -74,6 +81,11 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         LoginModel login = retrofit.create(LoginModel.class);
 
         forwardButton.setOnClickListener(v -> {
+            ActivityCompat.requestPermissions(
+                this,
+                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_REQUEST_CODE);
+
             Call<Token> call = login.requestLoginToken(
                 new LoginObject(userNameField.getText().toString(),
                     passwordField.getText().toString()));

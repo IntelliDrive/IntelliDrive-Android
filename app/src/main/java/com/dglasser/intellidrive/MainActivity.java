@@ -59,11 +59,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final int SPEECH_REQUEST_CODE = 0;
 
     /**
-     * Location request code.
-     */
-    private static final int LOCATION_REQUEST_CODE = 1;
-
-    /**
      * Button to initiate talk with chatbot.
      */
     @BindView(R.id.voice_button) ImageButton voiceButton;
@@ -81,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
+
         Log.wtf("DGL", "Calling onStart");
         EventBus.getDefault().register(this);
         if (googleApiClient == null) {
@@ -102,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -214,6 +211,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             this.location = location;
         }
         miles += this.location.distanceTo(location) * 0.000621371;
+        Toast.makeText(this, location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
