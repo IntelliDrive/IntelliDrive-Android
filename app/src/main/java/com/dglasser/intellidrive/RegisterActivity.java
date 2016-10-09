@@ -77,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Bori
         sharedPreferences = getApplicationContext().getSharedPreferences(
             getString(R.string.token_storage), Context.MODE_PRIVATE);
 
-        if (sharedPreferences.getString(getString(R.string.token), null) != null) {
+        if (sharedPreferences.getString(getString(R.string.token_save), null) != null) {
             startActivity(new Intent(this, MainActivity.class));
         }
 

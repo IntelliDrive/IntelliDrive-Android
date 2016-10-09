@@ -15,6 +15,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import com.dglasser.intellidrive.CleverBotInterface.ChatterBot;
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBotFactory;
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBotSession;
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBotType;
+import com.dglasser.intellidrive.CustomDialogs.TripDialogFragment;
 import com.dglasser.intellidrive.Events.ThinkEvent;
 import com.dglasser.intellidrive.Model.TripModel;
 import com.dglasser.intellidrive.POJO.BaseTripResponse;
@@ -88,11 +92,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @BindView(R.id.voice_button) ImageButton voiceButton;
 
+    /**
+     * Starts trip.
+     */
     @BindView(R.id.start_trip_button) Button startTripButton;
 
-    @BindView(R.id.get_all_miles) Button getAllMiles;
-
+    /**
+     * Shows number of miles travelled.
+     */
     @BindView(R.id.miles_travelled_view) TextView milesTravelledView;
+
+    /**
+     * TextView with the miles per gallon.
+     */
+    @BindView(R.id.mpg) TextView mpgView;
+
+    /**
+     * TextView with the cost per gallon.
+     */
+    @BindView(R.id.cpg) TextView cpgView;
 
     /**
      * Shared preferences instance.
@@ -124,12 +142,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private Handler handler = new Handler();
 
-
     @Override
     protected void onStart() {
         super.onStart();
-
-        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles));
 
         Log.wtf("DGL", "Calling onStart");
         EventBus.getDefault().register(this);
@@ -161,8 +176,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ButterKnife.bind(this);
 
         initTextToSpeech();
-
         Gson gson = new Gson();
+
+        double milesFilled;
+
+        try {
+            milesFilled = Double.valueOf(
+                preferences.getString(getString(R.string.miles_filled_save), "0"));
+        } catch (NullPointerException e) {
+            milesFilled = 0;
+        }
+
+        double cost;
+
+        try {
+            cost = milesFilled *
+                Double.valueOf(preferences.getString(getString(R.string.cost), "2.20"));
+        } catch (NullPointerException e) {
+            cost = 2.20;
+        }
+
+        String gallons;
+
+        try {
+            gallons = preferences.getString(getString(R.string.gallons_in_car), "25");
+        } catch (NullPointerException e) {
+            gallons = "25";
+        }
+
+        double mpg = miles / Double.valueOf(gallons);
+
+        mpgView.setText(String.format(getString(R.string.mpg), mpg == 0 ? "∞" : mpg));
+        cpgView.setText(String.format(getString(R.string.cpg), cost + ""));
+        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles + ""));
 
         ChatterBotFactory factory = new ChatterBotFactory();
         try {
@@ -178,13 +224,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .build();
 
             TripModel model = retrofit.create(TripModel.class);
+            TripDialogFragment tripDialogFragment = TripDialogFragment.newInstance("new trip");
+            tripDialogFragment.show(getSupportFragmentManager(), "test");
 
-            Call<BaseTripResponse> call = model.initNewTrip(
-                "PERSONAL",
-                "josh",
-                new Token(preferences.getString(getString(R.string.token), null)));
+            tripDialogFragment.setListener(pair -> {
+                Call<BaseTripResponse> call = model.initNewTrip(
+                    pair.getTripType(),
+                    pair.getName(),
+                    new Token(preferences.getString(getString(R.string.token_save), null)));
 
-            call.clone().enqueue(this);
+                call.clone().enqueue(this);
+            });
         });
 
         voiceButton.setOnClickListener(v -> sendSpeechInput());
@@ -293,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             this.location = location;
         }
         miles += this.location.distanceTo(location) * 0.000621371;
-        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles));
+        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles + ""));
     }
 
     @Override
@@ -349,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     TripModel tripModel = retrofit.create(TripModel.class);
                     Call<BaseTripResponse> call = tripModel.addTripMiles(
                         miles + "",
-                        new Token(preferences.getString(getString(R.string.token), null)));
+                        new Token(preferences.getString(getString(R.string.token_save), null)));
 
                     call.clone().enqueue(MainActivity.this);
                 });
@@ -366,5 +416,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             timerTask.cancel();
             timer.purge();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(this, SettingsActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 }

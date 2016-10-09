@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         sharedPreferences = getApplicationContext().getSharedPreferences(
             getString(R.string.token_storage), Context.MODE_PRIVATE);
 
-        if (sharedPreferences.getString(getString(R.string.token), null) != null) {
+        if (sharedPreferences.getString(getString(R.string.token_save), null) != null) {
             startActivity(new Intent(this, MainActivity.class));
         }
 
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         if (response.code() == 200) {
             Toast.makeText(this, response.body().getToken(), Toast.LENGTH_SHORT).show();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.token), response.body().getToken());
+            editor.putString(getString(R.string.token_save), response.body().getToken());
             editor.apply();
             Intent intent = new Intent(this, MainActivity.class);
             finishAffinity();
