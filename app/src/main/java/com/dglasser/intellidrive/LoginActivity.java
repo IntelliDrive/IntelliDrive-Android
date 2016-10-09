@@ -61,9 +61,6 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
-        String passedEmail = (String) getIntent().getExtras().get(getString(R.string.email));
-        String passedPassword = (String) getIntent().getExtras().get(getString(R.string.password));
-
         // If we're logged in, jump straight to the main page.
         sharedPreferences = getApplicationContext().getSharedPreferences(
             getString(R.string.token_storage), Context.MODE_PRIVATE);
@@ -81,11 +78,18 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
 
         LoginModel login = retrofit.create(LoginModel.class);
 
-        if (passedEmail != null && passedPassword != null) {
-            Call<Token> call = login.requestLoginToken(
-                new LoginObject(passedEmail, passedPassword));
+        try {
+            String passedEmail = (String) getIntent().getExtras().get(getString(R.string.email));
+            String passedPassword = (String) getIntent().getExtras().get(getString(R.string.password));
 
-            call.clone().enqueue(this);
+            if (passedEmail != null && passedPassword != null) {
+                Call<Token> call = login.requestLoginToken(
+                    new LoginObject(passedEmail, passedPassword));
+
+                call.clone().enqueue(this);
+            }
+        } catch (NullPointerException e) {
+            // no-op
         }
 
         forwardButton.setOnClickListener(v -> {
