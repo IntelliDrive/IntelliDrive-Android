@@ -94,21 +94,6 @@
                 android:layout_gravity="center"
                 android:layout_margin="8dp"/>
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="10dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/register_description"/>
-
-            <Button
-                android:id="@+id/register_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/register_button"/>
-
 
         </LinearLayout>
 

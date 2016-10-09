@@ -6,7 +6,7 @@
     <string name="login">Login</string>
 
     <string name="name">Name</string>
-    <string name="register_description">Don\'t have an account? Register!</string>
+    <string name="register_description">Already have an account? Login!</string>
     <string name="register_button">Register</string>
 
     <string name="token">token</string>
@@ -16,4 +16,12 @@
     <string name="start_trip">Start Trip</string>
 
     <string name="get_all_miles">Get all miles</string>
+
+    <string name="assistant">Assistant</string>
+
+    <string name="miles_travelled">Miles travelled: %1$d</string>
+
+    <string name="mpg">MPG: %1$d</string>
+    <string name="cpg">CPG: \$%1$d</string>
+
 </resources>

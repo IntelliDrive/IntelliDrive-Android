@@ -50,8 +50,6 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
      */
     @BindView(R.id.password_field) TextInputEditText passwordField;
 
-    @BindView(R.id.register_button) Button registerButton;
-
     /**
      * Shared preferences.
      */
@@ -62,6 +60,9 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        String passedEmail = (String) getIntent().getExtras().get(getString(R.string.email));
+        String passedPassword = (String) getIntent().getExtras().get(getString(R.string.password));
 
         // If we're logged in, jump straight to the main page.
         sharedPreferences = getApplicationContext().getSharedPreferences(
@@ -80,6 +81,13 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
 
         LoginModel login = retrofit.create(LoginModel.class);
 
+        if (passedEmail != null && passedPassword != null) {
+            Call<Token> call = login.requestLoginToken(
+                new LoginObject(passedEmail, passedPassword));
+
+            call.clone().enqueue(this);
+        }
+
         forwardButton.setOnClickListener(v -> {
             ActivityCompat.requestPermissions(
                 this,
@@ -93,8 +101,6 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
             call.clone().enqueue(this);
         });
 
-        registerButton.setOnClickListener(v ->
-            startActivity(new Intent(this, RegisterActivity.class)));
     }
 
     @Override

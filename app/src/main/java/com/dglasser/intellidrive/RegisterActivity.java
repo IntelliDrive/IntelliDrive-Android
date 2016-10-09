@@ -1,7 +1,12 @@
 package com.dglasser.intellidrive;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.Toast;
@@ -25,6 +30,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class RegisterActivity extends AppCompatActivity implements Callback<BoringResposeObject> {
 
+    private static final int LOCATION_REQUEST_CODE = 0;
+
     /**
      * Field where user inputs name.
      */
@@ -45,11 +52,34 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Bori
      */
     @BindView(R.id.forward_button) Button registerButton;
 
+    /**
+     * Login button.
+     */
+    @BindView(R.id.login_button) Button loginButton;
+
+    /**
+     * Android shared preferences.
+     */
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
+
+        ActivityCompat.requestPermissions(
+            this,
+            new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+            LOCATION_REQUEST_CODE);
+
+        // If we're logged in, jump straight to the main page.
+        sharedPreferences = getApplicationContext().getSharedPreferences(
+            getString(R.string.token_storage), Context.MODE_PRIVATE);
+
+        if (sharedPreferences.getString(getString(R.string.token), null) != null) {
+            startActivity(new Intent(this, MainActivity.class));
+        }
 
         Gson gson = new Gson();
 
@@ -61,6 +91,11 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Bori
         RegisterModel register = retrofit.create(RegisterModel.class);
 
         registerButton.setOnClickListener(v -> {
+            ActivityCompat.requestPermissions(
+                this,
+                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_REQUEST_CODE);
+
             String name = nameField.getText().toString();
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
@@ -73,6 +108,8 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Bori
                 Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
             }
         });
+
+        loginButton.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
     }
 
     @Override
@@ -80,9 +117,12 @@ public class RegisterActivity extends AppCompatActivity implements Callback<Bori
         if (response.code() == 200) {
             Toast.makeText(
                 this,
-                "Registered successfully! Please log in with your new account!",
+                "Registered successfully!",
                 Toast.LENGTH_LONG).show();
-
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra(getString(R.string.email), emailField.getText().toString());
+            intent.putExtra(getString(R.string.password), passwordField.getText().toString());
+            startActivity(intent);
             finish();
         } else {
             Toast.makeText(

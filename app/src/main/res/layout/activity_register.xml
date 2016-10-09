@@ -12,78 +12,123 @@
     tools:context="com.dglasser.intellidrive.RegisterActivity"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/name">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/name_field"
+            <FrameLayout
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_margin="8dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/circle_logo"/>
+
+            </FrameLayout>
+
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:hint="@string/name">
 
-    </android.support.v7.widget.CardView>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/name_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="8dp"/>
+                </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            </android.support.v7.widget.CardView>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/email">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="8dp"/>
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/username_field"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
 
-        </android.support.design.widget.TextInputLayout>
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:hint="@string/email">
 
-    </android.support.v7.widget.CardView>
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/username_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
-    <View
-        android:layout_width="0dp"
-        android:layout_height="8dp"/>
+                </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+            </android.support.v7.widget.CardView>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:hint="@string/password">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="8dp"/>
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/password_field"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:hint="@string/password">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/password_field"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+
+                </android.support.design.widget.TextInputLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <Button
+                android:text="@string/register_button"
+                android:id="@+id/forward_button"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:layout_gravity="center"
+                android:layout_margin="8dp"/>
 
-        </android.support.design.widget.TextInputLayout>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="10dp"/>
 
-    </android.support.v7.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register_description"
+                android:layout_gravity="center"/>
 
-    <Button
-        android:text="@string/register_button"
-        android:id="@+id/forward_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="8dp"/>
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
 
 </LinearLayout>

@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dglasser.intellidrive.CleverBotInterface.ChatterBot;
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @BindView(R.id.get_all_miles) Button getAllMiles;
 
+    @BindView(R.id.miles_travelled_view) TextView milesTravelledView;
+
     /**
      * Shared preferences instance.
      */
@@ -125,6 +128,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
+
+        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles));
 
         Log.wtf("DGL", "Calling onStart");
         EventBus.getDefault().register(this);
@@ -288,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             this.location = location;
         }
         miles += this.location.distanceTo(location) * 0.000621371;
+        milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles));
     }
 
     @Override
