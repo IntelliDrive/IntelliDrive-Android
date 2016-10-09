@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @BindView(R.id.cpg) TextView cpgView;
 
+    @BindView(R.id.currentTrip) TextView currentTripView;
+
     /**
      * Shared preferences instance.
      */
@@ -180,6 +182,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         double milesFilled;
 
+        String currentTripText = null;
+
+        try {
+            currentTripText = preferences.getString(
+                getString(R.string.current_trip_save), null);
+        } catch (NullPointerException e) {
+            // no-op
+        }
+
+        try {
+            miles = Float.valueOf(preferences.getString(getString(R.string.miles_saved), 0 + ""));
+        } catch (NullPointerException e) {
+            // no-op
+        }
+
+
+        currentTripView.setText(
+            currentTripText == null ? "Roaming, start a trip!" : currentTripText);
+
         try {
             milesFilled = Double.valueOf(
                 preferences.getString(getString(R.string.miles_filled_save), "0"));
@@ -234,6 +255,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     new Token(preferences.getString(getString(R.string.token_save), null)));
 
                 call.clone().enqueue(this);
+
+                preferences.getString(getString(R.string.current_trip_save), pair.getTripType());
+
+                currentTripView.setText(pair.getTripType());
+                miles = 0;
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(getString(R.string.miles_saved), miles + "");
+                editor.apply();
             });
         });
 
@@ -341,7 +370,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (this.location == null) {
             this.location = location;
         }
+        SharedPreferences.Editor editor = preferences.edit();
         miles += this.location.distanceTo(location) * 0.000621371;
+        editor.putString(getString(R.string.miles_saved), miles + "");
         milesTravelledView.setText(String.format(getString(R.string.miles_travelled), miles + ""));
     }
 

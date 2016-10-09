@@ -9,7 +9,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.dglasser.intellidrive.Model.LoginModel;
 import com.dglasser.intellidrive.POJO.LoginObject;
@@ -110,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
     @Override
     public void onResponse(Call<Token> call, Response<Token> response) {
         if (response.code() == 200) {
-            Toast.makeText(this, response.body().getToken(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, response.body().getToken(), Toast.LENGTH_SHORT).show();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(getString(R.string.token_save), response.body().getToken());
             editor.apply();
@@ -118,12 +117,12 @@ public class LoginActivity extends AppCompatActivity implements Callback<Token> 
             finishAffinity();
             startActivity(intent);
         } else {
-            Toast.makeText(this, response.code() + "", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, response.code() + "", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onFailure(Call<Token> call, Throwable t) {
-        Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show();
     }
 }

@@ -26,6 +26,8 @@
     <string name="gallons_in_car">Gallons of gas in car: </string>
     <string name="save">Save</string>
 
+    <string name="current_trip">Current trip: %1$s</string>
+
     <!-- Trip dialog fragment -->
     <string name="trip_name">Trip name</string>
     <string name="trip_type">Trip type</string>
@@ -38,13 +40,12 @@
     <!-- DATA ACCESSORS: DO NOT TOUCH -->
     <string name="gallons_save">gallons</string>
     <string name="miles_filled_save">miles filled</string>
+    <string name="miles_saved">miles</string>
     <string name="token_save">token</string>
     <string name="cost">cost</string>
+    <string name="current_trip_save">current trip</string>
 
     <!-- USED FOR ACCESSING DATABASE -->
     <string name="token_storage">token_storage</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
