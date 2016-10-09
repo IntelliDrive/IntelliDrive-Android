@@ -319,7 +319,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         } else {
-            Toast.makeText(this, "didn't work?", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -361,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (response.code() == 200) {
                 Log.v("DGL", response.body().getMsg());
             } else {
-                Toast.makeText(this, "No 200 :(" + response.code(), Toast.LENGTH_SHORT).show();
             }
         }
     }
