@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +21,19 @@ public class TripDialogFragment extends DialogFragment {
 
     private OnFragmentDismissedListener listener;
 
+    /**
+     * Cancels fragment.
+     */
     @BindView(R.id.cancel_button) Button cancelButton;
 
+    /**
+     * Button start trip.
+     */
     @BindView(R.id.start_button) Button startButton;
 
+    /**
+     *
+     */
     @BindView(R.id.trip_name_field) TextInputEditText tripNameField;
 
     @BindView(R.id.radio_group) RadioGroup radioGroup;
@@ -82,6 +90,10 @@ public class TripDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Listener to talk with the parent.
+     * @param listener Listener to talk with fragment.
+     */
     public void setListener(OnFragmentDismissedListener listener) {
         this.listener = listener;
     }
